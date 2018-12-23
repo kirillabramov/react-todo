@@ -16,14 +16,27 @@ class App extends Component {
 
   state = {
     todoData : [
-      {'text': 'first item', 'key': 'first item'},
-      {'text': 'second item', 'key': 'second item'},
-      {'text': 'third item', 'key': 'third item'}
+      this.createTodoItem('first item'),
+      this.createTodoItem('second item'),
+      this.createTodoItem('third item')
     ],
     important: false,
     done: false
   };
 
+
+
+
+  createTodoItem(text){
+    return {
+      text: text,
+      key: text + this.counter,
+      important: false,
+      done: false
+    }
+  }
+
+  
   deleteItem = (key) =>{
     this.setState(({ todoData }) => {
       let indexOfDeleted = todoData.findIndex((item) => item.key === key),
@@ -40,10 +53,8 @@ class App extends Component {
 
   addItem = (text) => {
     this.counter++;
-    const newItem = {
-      text: text,
-      key: text + this.counter
-    }
+    const newItem = this.createTodoItem(text);
+
     this.setState(({todoData}) => {
         let finalArray = [
           newItem, 
@@ -55,28 +66,47 @@ class App extends Component {
     }); 
   }
 
-  onToggleImportant = (id) => {
-    this.setState(({important}) =>{
+  onToggleImportant = (key) => {
+    this.setState(({todoData}) =>{
+      let indexOfDeleted = todoData.findIndex((item) => item.key === key),
+          oldItem = todoData[indexOfDeleted],
+          newItem = {...oldItem, important: !oldItem.important},
+          newArray = [
+            ...todoData.slice(0, indexOfDeleted),
+            newItem,
+            ...todoData.slice(indexOfDeleted + 1)
+          ];
       return{
-        important: !important
+          todoData: newArray
       }
     });
   }
 
-  onToggleDone = (id) => {
-    this.setState(({done}) =>{
-      return{
-        done: !done
-      }
+  onToggleDone = (key) => {
+    this.setState(({todoData}) =>{
+        let indexOfDeleted = todoData.findIndex((item) => item.key === key),
+            oldItem = todoData[indexOfDeleted],
+            newItem = {...oldItem, done: !oldItem.done};
+            
+            const newArray = [...todoData.slice(0, indexOfDeleted),
+                        newItem,
+                        ...todoData.slice(indexOfDeleted + 1)
+                      ];
+            return{
+              todoData: newArray
+            };
     });
   }
 
   render() {
+    const numberOfDone = this.state.todoData.filter(item => item.done).length,
+          numberOfTodo = this.state.todoData.length - numberOfDone;
+    
     return (
       <div className="App">
           <div className="todo__wrapper">
             <div className="todo__header">
-              <TodoHeader todo={3} done={4}/>
+              <TodoHeader todo={numberOfTodo} done={numberOfDone}/>
             </div>
             <div className="todo__buttons">
               <TodoSearch />

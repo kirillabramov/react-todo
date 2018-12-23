@@ -9,15 +9,15 @@ export default class TodoListItem extends Component{
 
 
     render(){
-        const { text, onDeleted, onToggleImportant, onToggleDone } = this.props;
+        const { text, onDeleted, onToggleImportant, onToggleDone, important, done } = this.props;
 
         let classNames = 'todo__item';
-        // if(done){
-        //     classNames += ' todo__item--done';
-        // } 
-        // if(important){
-        //     classNames += ' todo__item--important';
-        // }
+        if(done){
+            classNames += ' todo__item--done';
+        } 
+        if(important){
+            classNames += ' todo__item--important';
+        }
 
         return(
             <li 

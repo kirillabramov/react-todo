@@ -11,8 +11,10 @@ const TodoList = ({todos, onDeleted, onToggleImportant, onToggleDone}) => {
                     onDeleted={(e) => {
                         e.stopPropagation();
                         onDeleted(item.key)}}
-                    onToggleDone={onToggleDone}
-                    onToggleImportant={onToggleImportant}
+                    onToggleDone={() => {onToggleDone(item.key)}}
+                    onToggleImportant={(e) => {
+                        e.stopPropagation();
+                        onToggleImportant(item.key)}}
                     {...item}/>
                     );
                 })}
