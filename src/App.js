@@ -27,6 +27,17 @@ class App extends Component {
 
 
 
+  toggleProperty(arr, key, propName){
+    let indexOfDeleted = arr.findIndex((item) => item.key === key),
+    oldItem = arr[indexOfDeleted],
+    newItem = {...oldItem, [propName]: !oldItem[propName]};
+    
+    return [...arr.slice(0, indexOfDeleted),
+                newItem,
+                ...arr.slice(indexOfDeleted + 1)
+              ];
+  }
+
   createTodoItem(text){
     return {
       text: text,
@@ -68,32 +79,16 @@ class App extends Component {
 
   onToggleImportant = (key) => {
     this.setState(({todoData}) =>{
-      let indexOfDeleted = todoData.findIndex((item) => item.key === key),
-          oldItem = todoData[indexOfDeleted],
-          newItem = {...oldItem, important: !oldItem.important},
-          newArray = [
-            ...todoData.slice(0, indexOfDeleted),
-            newItem,
-            ...todoData.slice(indexOfDeleted + 1)
-          ];
       return{
-          todoData: newArray
+          todoData: this.toggleProperty(todoData, key, 'important')
       }
     });
   }
 
   onToggleDone = (key) => {
     this.setState(({todoData}) =>{
-        let indexOfDeleted = todoData.findIndex((item) => item.key === key),
-            oldItem = todoData[indexOfDeleted],
-            newItem = {...oldItem, done: !oldItem.done};
-            
-            const newArray = [...todoData.slice(0, indexOfDeleted),
-                        newItem,
-                        ...todoData.slice(indexOfDeleted + 1)
-                      ];
             return{
-              todoData: newArray
+              todoData: this.toggleProperty(todoData, key, 'done')
             };
     });
   }
