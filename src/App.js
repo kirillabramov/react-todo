@@ -20,8 +20,7 @@ class App extends Component {
       this.createTodoItem('second item'),
       this.createTodoItem('third item')
     ],
-    important: false,
-    done: false
+    term: ''
   };
 
 
@@ -75,7 +74,7 @@ class App extends Component {
           todoData: finalArray
         };
     }); 
-  }
+  };
 
   onToggleImportant = (key) => {
     this.setState(({todoData}) =>{
@@ -83,7 +82,7 @@ class App extends Component {
           todoData: this.toggleProperty(todoData, key, 'important')
       }
     });
-  }
+  };
 
   onToggleDone = (key) => {
     this.setState(({todoData}) =>{
@@ -91,11 +90,22 @@ class App extends Component {
               todoData: this.toggleProperty(todoData, key, 'done')
             };
     });
-  }
+  };
 
+  search(items, term){
+    if(term.length === 0){    
+      return items;
+    }
+    return items.filter((item) => {
+      return item.text.indexOf(term) > -1;
+
+    });
+  }
+  
   render() {
     const numberOfDone = this.state.todoData.filter(item => item.done).length,
-          numberOfTodo = this.state.todoData.length - numberOfDone;
+          numberOfTodo = this.state.todoData.length - numberOfDone,
+          visibleItems = this.search(this.state.todoData, this.state.term);
     
     return (
       <div className="App">
@@ -104,7 +114,7 @@ class App extends Component {
               <TodoHeader todo={numberOfTodo} done={numberOfDone}/>
             </div>
             <div className="todo__buttons">
-              <TodoSearch />
+              <TodoSearch todo={this.state.todoData}/>
               <TodoStatusFilter />
             </div>
             <TodoList 
@@ -112,7 +122,7 @@ class App extends Component {
             onDeleted={this.deleteItem}
             onToggleImportant={this.onToggleImportant}
             onToggleDone={this.onToggleDone}/>
-            <TodoAddItem addItem={() =>{this.addItem('text')}}/>
+            <TodoAddItem addItem={this.addItem}/>
           </div>
       </div>
     );

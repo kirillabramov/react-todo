@@ -3,6 +3,18 @@
     justify-content: center;
 }
 .todo{
+    &__form{
+         margin-top: 10px;
+         input{
+             margin-right: 5px;
+         }
+         button{
+            width: 35%;
+         }
+         &--error{
+            border: 1px solid red;
+         }
+    }
     &__buttons{
         display: flex;
         justify-content: space-between;
