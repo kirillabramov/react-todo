@@ -31,7 +31,14 @@ class App extends Component {
 
   //Session storage 
     getFromSessionStorage(item){
-      return JSON.parse(sessionStorage.getItem(item) || '[]');
+      if(sessionStorage.getItem(item)){
+        return JSON.parse(sessionStorage.getItem(item));
+        
+      } else{
+        return null;
+        
+      }
+
     }
 
     saveInSessionStorage(array, title){
@@ -39,8 +46,8 @@ class App extends Component {
     }
 
     deleteFromSessionStorage(array, item){
-      let itemIndex = array.indexOf(item);
-      array.splice(itemIndex, 1);
+
+      array.splice(item, 1);
       this.saveInSessionStorage(array, 'todo');
 
     }
@@ -81,17 +88,12 @@ class App extends Component {
           arrayBeforeItem = todoData.slice(0, indexOfDeleted),
           arrayAfterItem = todoData.slice(indexOfDeleted + 1),
           finalArray = [...arrayBeforeItem, ...arrayAfterItem];
-      setTimeout(() => {
-        this.deleteFromSessionStorage(todoData, todoData.filter(item => item.key === key));
-      }, 1);
+        this.deleteFromSessionStorage(this.getFromSessionStorage('todo'), this.getFromSessionStorage('todo').findIndex(item => item.key === key));
       return {
         todoData: finalArray
       };
 
     });
-    setTimeout(() => {
-      this.deleteFromSessionStorage('todo', );
-    }, 1);
   };
 
   addItem = (text) => {
@@ -103,10 +105,11 @@ class App extends Component {
           newItem, 
           ...todoData
         ];
+        this.saveInSessionStorage(finalArray, 'todo');
         return {
           todoData: finalArray
         };
-    }, _ => this.saveInSessionStorage(this.state.todoData, 'todo')); 
+    }); 
   };
 
   onToggleImportant = (key) => {
@@ -131,7 +134,6 @@ class App extends Component {
   onStatusChange = (filter) => {
     this.setState({ filter });
   }
-
   search(items, term){
     if(term.length === 0){    
       return items;
@@ -156,9 +158,11 @@ class App extends Component {
   }
   
   render() {
-    const numberOfDone = this.state.todoData.filter(item => item.done).length,
-          numberOfTodo = this.state.todoData.length - numberOfDone,
-          visibleItems = this.filter(this.search(this.getFromSessionStorage('todo'), this.state.term), this.state.filter);
+
+    const checkSessionStorage = sessionStorage.getItem('todo') ? this.getFromSessionStorage('todo')  : this.state.todoData,
+          numberOfDone = checkSessionStorage.filter(item => item.done).length,
+          numberOfTodo = checkSessionStorage.length - numberOfDone,
+          visibleItems = this.filter(this.search(checkSessionStorage, this.state.term), this.state.filter);
     
     return (
       <div className="App">
@@ -167,7 +171,7 @@ class App extends Component {
               <TodoHeader todo={numberOfTodo} done={numberOfDone}/>
             </div>
             <div className="todo__buttons">
-              <TodoSearch todo={this.state.todoData} onSearchChange={this.onSearchChange}/>
+              <TodoSearch todo={checkSessionStorage} onSearchChange={this.onSearchChange}/>
               <TodoStatusFilter onStatusChange={this.onStatusChange} filter={this.state.filter}/>
             </div>
             <TodoList 
