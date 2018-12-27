@@ -2,23 +2,23 @@ import React, { Component } from 'react';
 
 export default class TodoSearch extends Component{
 
-
-
-    handleSearch = (e) => {
-        this.props.todo.map((item) => {
-            console.log(item.text === e.target.value);
-            return item.text === e.target.value;
-        });
-        console.log(this.props.todo);
-        console.log(e.target.value);
+    state = {
+        term: ''
     }
+
+    onSearchChange = (e) => {
+        let term = e.target.value;
+        this.setState({ term });
+        this.props.onSearchChange(term.trim().toLowerCase());
+    };
 
     render(){
         return(
             <input 
-            onChange={this.handleSearch}
+            onChange={this.onSearchChange}
             placeholder='search' 
-            className="todo__search"/>
+            className="todo__search"
+            value={this.state.term}/>
       );
     }
 }

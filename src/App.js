@@ -20,7 +20,8 @@ class App extends Component {
       this.createTodoItem('second item'),
       this.createTodoItem('third item')
     ],
-    term: ''
+    term: '',
+    filter: 'all' // active, all, done
   };
 
 
@@ -92,6 +93,13 @@ class App extends Component {
     });
   };
 
+  onSearchChange = (term) => {
+      this.setState({ term });
+  };
+  onStatusChange = (filter) => {
+    this.setState({ filter });
+  }
+
   search(items, term){
     if(term.length === 0){    
       return items;
@@ -100,12 +108,25 @@ class App extends Component {
       return item.text.indexOf(term) > -1;
 
     });
+  };
+
+  filter(items, filter){
+    switch(filter){
+      case 'all':
+        return items;
+      case 'active':
+        return items.filter((item) => !item.done);
+      case 'done':
+        return items.filter((item) => item.done);
+      default:
+        return items;
+    };
   }
   
   render() {
     const numberOfDone = this.state.todoData.filter(item => item.done).length,
           numberOfTodo = this.state.todoData.length - numberOfDone,
-          visibleItems = this.search(this.state.todoData, this.state.term);
+          visibleItems = this.filter(this.search(this.state.todoData, this.state.term), this.state.filter);
     
     return (
       <div className="App">
@@ -114,11 +135,11 @@ class App extends Component {
               <TodoHeader todo={numberOfTodo} done={numberOfDone}/>
             </div>
             <div className="todo__buttons">
-              <TodoSearch todo={this.state.todoData}/>
-              <TodoStatusFilter />
+              <TodoSearch todo={this.state.todoData} onSearchChange={this.onSearchChange}/>
+              <TodoStatusFilter onStatusChange={this.onStatusChange} filter={this.state.filter}/>
             </div>
             <TodoList 
-            todos={this.state.todoData}
+            todos={visibleItems}
             onDeleted={this.deleteItem}
             onToggleImportant={this.onToggleImportant}
             onToggleDone={this.onToggleDone}/>
